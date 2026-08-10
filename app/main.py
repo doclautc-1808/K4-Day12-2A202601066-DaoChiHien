@@ -124,13 +124,11 @@ def chat(
     ``client_id`` do ``verify_bearer_token`` trả về, nên request không có
     token hợp lệ sẽ dừng ở 401 trước khi chạm vào bất cứ dòng nào ở đây.
     """
-    # 1. Token bucket — chặn gọi quá nhanh
-    if not bucket.consume(client_id):
-        return JSONResponse(status_code=429, content={"detail": "rate limit exceeded"})
+    # 1. Token bucket — chặn gọi quá nhanh (raise 429 nếu xô cạn)
+    bucket.consume(client_id)
 
-    # 2. Cost guard — chặn khi hết ngân sách ngày
-    if not guard.check(client_id):
-        return JSONResponse(status_code=402, content={"detail": "daily budget exceeded"})
+    # 2. Cost guard — chặn khi hết ngân sách ngày (raise 402 nếu vượt)
+    guard.check(client_id)
 
     # 3. Lấy lịch sử hội thoại
     history = store.history(client_id)
