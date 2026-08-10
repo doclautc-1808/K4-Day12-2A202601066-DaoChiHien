@@ -10,17 +10,17 @@
 
 | Mục | Nội dung |
 |-----|----------|
-| Họ và tên | (điền họ tên) |
-| Mã học viên | (điền mã học viên) |
-| Repo | (điền link repo K4-DAY12-...) |
+| Họ và tên | Đào Chí Hiển |
+| Mã học viên | 2A202601066 |
+| Repo | https://github.com/doclautc-1808/K4-Day12-2A202601066-DaoChiHien |
 
 ## Service
 
 | Mục | Nội dung |
 |-----|----------|
-| Public URL | https://TODO-thay-bang-url-that.up.railway.app |
-| Platform | Railway / Render / Cloud Run — (điền platform bạn dùng) |
-| Ngày deploy | (điền ngày) |
+| Public URL |  https://chat-production-4f91.up.railway.app     |
+| Platform | Railway |
+| Ngày deploy | 10/08/2026 |
 
 ## Biến Môi Trường Đã Set Trên Cloud
 
@@ -28,9 +28,9 @@ Ghi tên biến và **nguồn giá trị**, không ghi giá trị:
 
 | Biến | Đã set | Ghi chú |
 |------|--------|---------|
-| `PORT` | ✅ | platform tự gán |
+| `PORT` | ✅ | 8000 |
 | `API_TOKEN` | ✅ | đặt trong dashboard, không nằm trong repo |
-| `REDIS_URL` | ✅ | (điền: Redis add-on của platform / Upstash / ...) |
+| `REDIS_URL` | ✅ | redis://localhost:6379/0 |
 | `BUCKET_CAPACITY` | ✅ | 10 |
 | `REFILL_PER_MINUTE` | ✅ | 10 |
 | `DAILY_BUDGET_USD` | ✅ | 1.0 |
@@ -42,18 +42,18 @@ Thay `<URL>` bằng Public URL ở trên:
 
 ```bash
 # 1. Liveness — mong đợi 200 {"status":"ok"}
-curl -i <URL>/healthz
+curl -i  https://chat-production-4f91.up.railway.app/healthz
 
 # 2. Readiness — mong đợi 200 {"status":"ready"} (đã nối được Redis)
-curl -i <URL>/readyz
+curl -i  https://chat-production-4f91.up.railway.app/readyz
 
 # 3. Không có token — mong đợi 401 kèm header WWW-Authenticate
-curl -i -X POST <URL>/chat \
+curl -i -X POST  https://chat-production-4f91.up.railway.app/chat \
   -H "Content-Type: application/json" \
   -d '{"message":"Hello"}'
 
 # 4. Có token — mong đợi 200 kèm câu trả lời
-curl -i -X POST <URL>/chat \
+curl -i -X POST  https://chat-production-4f91.up.railway.app/chat \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $API_TOKEN" \
   -H "X-Client-Id: sv-test" \
@@ -61,7 +61,7 @@ curl -i -X POST <URL>/chat \
 
 # 5. Rate limit — gọi 15 lần, những lần cuối phải trả 429
 for i in $(seq 1 15); do
-  curl -s -o /dev/null -w "%{http_code} " -X POST <URL>/chat \
+  curl -s -o /dev/null -w "%{http_code} " -X POST  https://chat-production-4f91.up.railway.app/chat \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $API_TOKEN" \
     -H "X-Client-Id: sv-test" \
@@ -74,7 +74,45 @@ done; echo
 Dán output của các lệnh trên vào đây:
 
 ```
-(điền output)
+HTTP/2 200
+content-type: application/json
+date: Mon, 10 Aug 2026 13:20:28 GMT
+server: railway-hikari
+x-railway-request-id: jxj0hGfQSIiQbifLjq4OvQ
+content-length: 64
+x-hikari-trace: sin1.98a6
+x-railway-edge: sin1
+
+{"status":"ok","service":"day12-chat-service","version":"1.0.0"}HTTP/2 200
+content-type: application/json
+date: Mon, 10 Aug 2026 13:20:28 GMT
+server: railway-hikari
+x-railway-request-id: BhRf9YOKR9i1VSCl9fVATg
+content-length: 31
+x-hikari-trace: sin1.98a6
+x-railway-edge: sin1
+
+{"status":"ready","redis":true}HTTP/2 401
+content-type: application/json
+date: Mon, 10 Aug 2026 13:20:29 GMT
+server: railway-hikari
+www-authenticate: Bearer
+x-railway-request-id: mTFLtWINT5aCmck19I3ezw
+content-length: 44
+x-hikari-trace: sin1.tr00
+x-railway-edge: sin1
+
+{"detail":"invalid or missing bearer token"}HTTP/2 200
+content-type: application/json
+date: Mon, 10 Aug 2026 13:20:29 GMT
+server: railway-hikari
+x-railway-request-id: OtjCuAB3SyOltXx8LPU1MQ
+content-length: 288
+x-hikari-trace: sin1.d1nj
+x-railway-edge: sin1
+vary: accept-encoding
+
+{"reply":"Câu hỏi hay. Deploy là gì thường được giải quyết bằng cách chuẩn hóa môi trường chạy: cùng một image chạy giống nhau ở laptop và trên cloud.","client_id":"sv-test","turns_before":0,"usd_cost":2.145e-05,"usage":{"prompt":3,"completion":35}}200 200 200 200 200 200 200 200 200 429 429 200 429 429 429
 ```
 
 ## Ảnh Chụp Màn Hình
@@ -98,5 +136,5 @@ Không đăng ký được tài khoản cloud? Vẫn nộp được bài, nhưng
 5. Ghi rõ lý do không deploy được vào phần dưới đây:
 
 ```
-(điền lý do nếu dùng phương án dự phòng, ngược lại xóa mục này)
+Đã đăng ký được
 ```

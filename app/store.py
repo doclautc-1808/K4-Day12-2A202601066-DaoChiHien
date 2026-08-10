@@ -52,7 +52,8 @@ class ChatStore:
         """
         try:
             return bool(self.client.ping())
-        except Exception:
+        except Exception as e:
+            print(f"[DEBUG] Redis ping failed: {type(e).__name__}: {e}", flush=True)
             return False
 
     def add_turn(self, client_id: str, role: str, content: str) -> None:
